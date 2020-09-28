@@ -1,7 +1,7 @@
 <template>
   <h1>{{ header }}</h1>
-  <input type="text" v-model="a">
-  <input type="text" v-model="b">
+  <input type="text" v-model="a" placeholder="First Word" title="First Word">
+  <input type="text" v-model="b" placeholder="Second Word" title="First Word">
   <button @click="append">Append</button>
   <div style="display: flex; justify-content: center;">
     <table>
@@ -12,7 +12,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="[a, b] in list">
+        <tr v-for="{a, b} in list">
           <td>{{a}}</td>
           <td>{{b}}</td>
         </tr>
@@ -26,6 +26,8 @@ import { defineComponent, ref, onMounted, onBeforeUnmount } from "vue";
 import Database from "../Database";
 import { Pair } from "../schema";
 
+let db;
+
 export default defineComponent({
   name: 'HelloWorld',
   props: {
@@ -37,15 +39,16 @@ export default defineComponent({
   setup() {
     const a = ref('');
     const b = ref('');
-    const list = ref<string[][]>([]);
-    const append = () => {
-      list.value.push([a.value, b.value]);
-      console.log('list', list);
+    const list = ref<Pair[]>([]);
+    const append = async () => {
+      const pair = { a: a.value, b: b.value };
+      list.value.push(pair);
+      await db.insertOne(pair);
     };
     onMounted(async () => {
-      const db = await Database.get();
-      const pairs = await db.collection<Pair>('pairs').find({}).asArray();
-      console.log(pairs);
+      db = (await Database.get());
+      const pairs = await db.find({}).asArray();
+      list.value = pairs;
     });
     onBeforeUnmount(Database.clear);
 
