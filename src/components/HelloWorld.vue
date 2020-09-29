@@ -31,13 +31,27 @@
                 type="text"
                 v-model="a"
                 class="form-control"
+                :class="{'is-invalid': errorA}"
                 ref="inputA"
                 placeholder="First Word"
                 title="First Word"
               >
-              <input type="text" v-model="b" class="form-control" placeholder="Second Word" title="First Word">
+              <input
+                type="text"
+                v-model="b"
+                class="form-control"
+                :class="{'is-invalid': errorB}"
+                placeholder="Second Word"
+                title="First Word"
+              >
               <div class="input-group-append">
-                <button type="submit" class="btn btn-outline-success">Add Pair</button>
+                <button
+                  type="submit"
+                  class="btn"
+                  :class="errorA || errorB ? 'btn-outline-danger' : 'btn-outline-success'"
+                >
+                  Add Pair
+                </button>
               </div>
             </div>
           </form>
@@ -97,6 +111,8 @@ function useUsername(isUsernameSet: Ref<boolean>) {
 function useSynonym(isUsernameSet: Ref<boolean>, username: Ref<string>) {
   const a = ref('');
   const b = ref('');
+  const errorA = ref(false);
+  const errorB = ref(false);
   const inputA = ref<HTMLInputElement>(null);
   const list = ref<Pair[]>([]);
 
@@ -110,6 +126,12 @@ function useSynonym(isUsernameSet: Ref<boolean>, username: Ref<string>) {
   onBeforeUnmount(Database.clear);
 
   const append = async () => {
+    errorA.value = !a.value.trim();
+    errorB.value = !b.value.trim();
+    if (errorA.value || errorB.value) {
+      return;
+    }
+
     const pair = { username: username.value, a: a.value, b: b.value };
     list.value.push(pair);
     a.value = '';
@@ -186,6 +208,8 @@ function useSynonym(isUsernameSet: Ref<boolean>, username: Ref<string>) {
   return {
     a,
     b,
+    errorA,
+    errorB,
     inputA,
     list,
     groups,
