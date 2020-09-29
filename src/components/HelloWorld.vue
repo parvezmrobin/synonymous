@@ -96,6 +96,8 @@ function useSynonym(isUsernameSet: Ref<boolean>, username: Ref<string>) {
     const pair = { username: username.value, a: a.value, b: b.value };
     list.value.push(pair);
     await db.insertOne(pair);
+    a.value = '';
+    b.value = '';
   };
 
   const groups = computed(() => {
