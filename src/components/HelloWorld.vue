@@ -132,7 +132,7 @@ function useSynonym(isUsernameSet: Ref<boolean>, username: Ref<string>) {
       return;
     }
 
-    const pair = { username: username.value, a: a.value, b: b.value };
+    const pair = { username: username.value, a: a.value.trim(), b: b.value.trim() };
     list.value.push(pair);
     a.value = '';
     b.value = '';
@@ -200,7 +200,7 @@ function useSynonym(isUsernameSet: Ref<boolean>, username: Ref<string>) {
       (group) => Array.from(group.entries())
         .sort(([, c1], [, c2]) => c2 - c1)
         .map(([word]) => word),
-    );
+    ).sort(([w1], [w2]) => w1 > w2 ? 1 : -1);
 
     return sortedGroups;
   });
