@@ -15,30 +15,46 @@
             </div>
           </div>
         </form>
-        <form
-          v-else
-          @submit.prevent="append"
-        >
-          <div class="input-group mb-3">
-            <input type="text" v-model="a" class="form-control" placeholder="First Word" title="First Word">
-            <input type="text" v-model="b" class="form-control" placeholder="Second Word" title="First Word">
-            <div class="input-group-append">
-              <button type="submit" class="btn btn-outline-success">Add Pair</button>
+        <template v-else>
+          <form
+            @submit.prevent="append"
+          >
+            <div class="input-group mb-3">
+              <input type="text" v-model="a" class="form-control" placeholder="First Word" title="First Word">
+              <input type="text" v-model="b" class="form-control" placeholder="Second Word" title="First Word">
+              <div class="input-group-append">
+                <button type="submit" class="btn btn-outline-success">Add Pair</button>
+              </div>
+            </div>
+          </form>
+          <div style="display: flex; justify-content: center;">
+            <table
+              v-if="groups.length"
+              class="table"
+            >
+              <tbody>
+                <tr v-for="group in groups">
+                  <th>{{ group[0] }}</th>
+                  <td>
+                    {{ [...group.slice(1)].join(', ') }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div
+              v-else
+              class="alert alert-primary text-center w-100"
+            >
+              <strong>Welcome to Synonymous!</strong> <br>
+              <span class="d-inline-block">
+              Keep adding synonym pairs.
+            </span>
+              <span class="d-inline-block">
+              &nbsp;Words of similar meaning will be grouped automatically.
+            </span>
             </div>
           </div>
-        </form>
-        <div style="display: flex; justify-content: center;">
-          <table class="table">
-            <tbody>
-              <tr v-for="group in groups">
-                <th>{{group[0]}}</th>
-                <td>
-                  {{ [...group.slice(1)].join(', ') }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        </template>
       </div>
     </div>
   </div>
