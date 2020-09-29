@@ -1,18 +1,32 @@
 <template>
-  <h1>{{ header }}</h1>
-  <input type="text" v-model="a" placeholder="First Word" title="First Word">
-  <input type="text" v-model="b" placeholder="Second Word" title="First Word">
-  <button @click="append">Append</button>
-  <div style="display: flex; justify-content: center;">
-    <table>
-      <tbody>
-        <tr v-for="group in groups">
-          <td>
-            {{ [...group.keys()].join(', ') }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 offset-md-2">
+        <h1 class="text-center">{{ header }}</h1>
+        <hr>
+        <form @submit.prevent="append">
+          <div class="input-group mb-3">
+            <input type="text" v-model="a" class="form-control" placeholder="First Word" title="First Word">
+            <input type="text" v-model="b" class="form-control" placeholder="Second Word" title="First Word">
+            <div class="input-group-append">
+              <button type="submit" class="btn btn-outline-success">Add Pair</button>
+            </div>
+          </div>
+        </form>
+        <div style="display: flex; justify-content: center;">
+          <table class="table">
+            <tbody>
+              <tr v-for="group in groups">
+                <th>{{group[0]}}</th>
+                <td>
+                  {{ [...group.slice(1)].join(', ') }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -38,22 +52,50 @@ export default defineComponent({
 
     const groups = computed(() => {
       const groups = [] as Map<string, number>[];
+
+      function merge(i, j, pair: Pair) {
+        const groupJ = groups[j];
+        groups.splice(j, 1);
+
+        for (const key of Array.from(groupJ.keys())) {
+          groups[i].set(key, groupJ.get(key));
+        }
+        groups[i].set(pair.a, groups[i].get(pair.a) + 1);
+        groups[i].set(pair.b, groups[i].get(pair.b) + 1);
+      }
+
       for (const pair of list.value) {
         let handled = false;
-        for (const group of groups) {
+        let aFoundAt = -1;
+        let bFoundAt = -1;
+        for (let i = 0; i < groups.length; i++){
+          const group = groups[i];
           if (group.has(pair.a)) {
+            if (bFoundAt !== -1) {
+              merge(bFoundAt, i, pair);
+              break;
+            }
+            aFoundAt = i;
             if (!group.has(pair.b)) {
               group.set(pair.b, 1);
             } else {
+              bFoundAt = i;
               group.set(pair.b, group.get(pair.b) + 1);
             }
             group.set(pair.a, group.get(pair.a) + 1);
             handled = true;
-            break;
           } else if (group.has(pair.b)) {
+            if (aFoundAt !== -1) {
+              merge(aFoundAt, i, pair);
+              break;
+            }
+            bFoundAt = i;
             group.set(pair.a, 1);
             group.set(pair.b, group.get(pair.b) + 1);
             handled = true;
+          }
+
+          if (aFoundAt !== -1 && bFoundAt !== -1) {
             break;
           }
         }
@@ -64,7 +106,13 @@ export default defineComponent({
         }
       }
 
-      return groups;
+      const sortedGroups = groups.map(
+        (group) => Array.from(group.entries())
+          .sort(([, c1], [, c2]) => c2 - c1)
+          .map(([word]) => word),
+      );
+
+      return sortedGroups;
     });
 
     const append = async () => {
