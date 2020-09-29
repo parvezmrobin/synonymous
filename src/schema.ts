@@ -1,3 +1,5 @@
+import { ObjectId } from "bson";
+
 export const pairsSchema = {
   name: 'pairs',
   properties: {
@@ -9,6 +11,8 @@ export const pairsSchema = {
 };
 
 export type Pair = {
+  _id?: ObjectId,
+  username: string;
   a: string;
   b: string;
 }

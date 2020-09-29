@@ -1,6 +1,8 @@
 import { AnonymousCredential, RemoteMongoClient, RemoteMongoCollection, Stitch } from "mongodb-stitch-browser-sdk";
 import { Pair } from "./schema";
 
+export type Collection =  RemoteMongoCollection<Pair>;
+
 export default class Database {
   static async get(): Promise<RemoteMongoCollection<Pair>> {
     try {

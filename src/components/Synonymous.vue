@@ -64,7 +64,7 @@
                 <tr v-for="group in groups">
                   <th>{{ group[0] }}</th>
                   <td>
-                    {{ [...group.slice(1)].join(', ') }}
+                    <Item :name="item" v-for="item in group.slice(1)" />
                   </td>
                 </tr>
               </tbody>
@@ -90,10 +90,11 @@
 
 <script lang="ts">
 import { defineComponent, ref, watch, onBeforeUnmount, computed, Ref, nextTick } from "vue";
-import Database from "../Database";
+import Database, { Collection } from "../Database";
 import { Pair } from "../schema";
+import Item from "./Item.vue";
 
-let db;
+let db: Collection;
 
 function useUsername(isUsernameSet: Ref<boolean>) {
   const username = ref('');
@@ -119,7 +120,7 @@ function useSynonym(isUsernameSet: Ref<boolean>, username: Ref<string>) {
   watch(isUsernameSet, async () => {
     await nextTick();
     inputA.value.focus();
-    db = (await Database.get());
+    db = await Database.get();
     const pairs = await db.find({ username: username.value }).asArray();
     list.value = pairs;
   });
@@ -219,6 +220,9 @@ function useSynonym(isUsernameSet: Ref<boolean>, username: Ref<string>) {
 
 export default defineComponent({
   name: 'HelloWorld',
+  components: {
+    Item,
+  },
   props: {
     header: {
       type: String,

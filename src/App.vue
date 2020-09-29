@@ -1,16 +1,16 @@
 <template>
-  <HelloWorld header="Synonymous" />
+  <Synonymous header="Synonymous" />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 
-import HelloWorld from './components/HelloWorld.vue';
+import Synonymous from './components/Synonymous.vue';
 
 export default defineComponent({
   name: 'App',
   components: {
-    HelloWorld
+    Synonymous
   },
 });
 </script>
