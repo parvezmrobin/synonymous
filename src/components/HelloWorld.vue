@@ -9,7 +9,14 @@
           @submit.prevent="setUsername"
         >
           <div class="input-group mb-3">
-            <input type="text" v-model="username" class="form-control" placeholder="Username" title="Username">
+            <input
+              autofocus
+              type="text"
+              v-model="username"
+              class="form-control"
+              placeholder="Username"
+              title="Username"
+            >
             <div class="input-group-append">
               <button type="submit" class="btn btn-outline-success">Set Username</button>
             </div>
@@ -20,7 +27,14 @@
             @submit.prevent="append"
           >
             <div class="input-group mb-3">
-              <input type="text" v-model="a" class="form-control" placeholder="First Word" title="First Word">
+              <input
+                type="text"
+                v-model="a"
+                class="form-control"
+                ref="inputA"
+                placeholder="First Word"
+                title="First Word"
+              >
               <input type="text" v-model="b" class="form-control" placeholder="Second Word" title="First Word">
               <div class="input-group-append">
                 <button type="submit" class="btn btn-outline-success">Add Pair</button>
@@ -61,7 +75,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, onBeforeUnmount, computed, Ref } from "vue";
+import { defineComponent, ref, watch, onBeforeUnmount, computed, Ref, nextTick } from "vue";
 import Database from "../Database";
 import { Pair } from "../schema";
 
@@ -83,9 +97,12 @@ function useUsername(isUsernameSet: Ref<boolean>) {
 function useSynonym(isUsernameSet: Ref<boolean>, username: Ref<string>) {
   const a = ref('');
   const b = ref('');
+  const inputA = ref<HTMLInputElement>(null);
   const list = ref<Pair[]>([]);
 
   watch(isUsernameSet, async () => {
+    await nextTick();
+    inputA.value.focus();
     db = (await Database.get());
     const pairs = await db.find({ username: username.value }).asArray();
     list.value = pairs;
@@ -95,9 +112,10 @@ function useSynonym(isUsernameSet: Ref<boolean>, username: Ref<string>) {
   const append = async () => {
     const pair = { username: username.value, a: a.value, b: b.value };
     list.value.push(pair);
-    await db.insertOne(pair);
     a.value = '';
     b.value = '';
+    inputA.value.focus();
+    await db.insertOne(pair);
   };
 
   const groups = computed(() => {
@@ -168,6 +186,7 @@ function useSynonym(isUsernameSet: Ref<boolean>, username: Ref<string>) {
   return {
     a,
     b,
+    inputA,
     list,
     groups,
     append,
