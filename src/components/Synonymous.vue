@@ -48,9 +48,9 @@
                 <button
                   type="submit"
                   class="btn"
-                  :class="errorA || errorB ? 'btn-outline-danger' : 'btn-outline-success'"
+                  :class="btnClass"
                 >
-                  Add Pair
+                  {{ btnText }}
                 </button>
               </div>
             </div>
@@ -64,7 +64,11 @@
                 <tr v-for="group in groups">
                   <th>{{ group[0] }}</th>
                   <td>
-                    <Item :name="item" v-for="item in group.slice(1)" />
+                    <Item
+                      v-for="item in group.slice(1)"
+                      :name="item"
+                      @edit="setEditPair(item)"
+                    />
                   </td>
                 </tr>
               </tbody>
@@ -116,6 +120,7 @@ function useSynonym(isUsernameSet: Ref<boolean>, username: Ref<string>) {
   const errorB = ref(false);
   const inputA = ref<HTMLInputElement>(null);
   const list = ref<Pair[]>([]);
+  const editPair = ref<Pair>(null);
 
   watch(isUsernameSet, async () => {
     await nextTick();
@@ -126,7 +131,7 @@ function useSynonym(isUsernameSet: Ref<boolean>, username: Ref<string>) {
   });
   onBeforeUnmount(Database.clear);
 
-  const append = async () => {
+  async function append() {
     errorA.value = !a.value.trim();
     errorB.value = !b.value.trim();
     if (errorA.value || errorB.value) {
@@ -134,12 +139,27 @@ function useSynonym(isUsernameSet: Ref<boolean>, username: Ref<string>) {
     }
 
     const pair = { username: username.value, a: a.value.trim(), b: b.value.trim() };
-    list.value.push(pair);
     a.value = '';
     b.value = '';
     inputA.value.focus();
-    await db.insertOne(pair);
-  };
+    if (editPair.value) {
+      editPair.value.a = pair.a;
+      editPair.value.b = pair.b;
+      const id = editPair.value._id
+      editPair.value = null;
+      await db.updateOne({ _id: id }, pair);
+    } else {
+      list.value.push(pair);
+      await db.insertOne(pair);
+    }
+  }
+
+  async function setEditPair(w: string) {
+    const pair = list.value.find((pair) => pair.a === w || pair.b === w);
+    editPair.value = pair;
+    a.value = pair.a;
+    b.value = pair.b;
+  }
 
   const groups = computed(() => {
     const groups = [] as Map<string, number>[];
@@ -206,6 +226,20 @@ function useSynonym(isUsernameSet: Ref<boolean>, username: Ref<string>) {
     return sortedGroups;
   });
 
+  const btnClass = computed(() => {
+    if (errorA.value || errorB.value) {
+      return 'btn-outline-danger';
+    }
+    if (editPair.value) {
+      return 'btn-outline-primary';
+    }
+    return 'btn-outline-success';
+  });
+
+  const btnText = computed(() => {
+    return editPair.value ? 'Edit Pair' : 'Add Pair';
+  })
+
   return {
     a,
     b,
@@ -215,6 +249,9 @@ function useSynonym(isUsernameSet: Ref<boolean>, username: Ref<string>) {
     list,
     groups,
     append,
+    setEditPair,
+    btnText,
+    btnClass,
   }
 }
 
