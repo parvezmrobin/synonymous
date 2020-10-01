@@ -4,24 +4,10 @@
       <div class="col-md-8 offset-md-2">
         <h1 class="text-center">{{ header }}</h1>
         <hr>
-        <form
-          v-if="!isUsernameSet"
-          @submit.prevent="setUsername"
-        >
-          <div class="input-group mb-3">
-            <input
-              autofocus
-              type="text"
-              v-model="username"
-              class="form-control"
-              placeholder="Username"
-              title="Username"
-            >
-            <div class="input-group-append">
-              <button type="submit" class="btn btn-outline-success">Set Username</button>
-            </div>
-          </div>
-        </form>
+        <Username
+          v-if="!username"
+          @input="setUsername"
+        />
         <template v-else>
           <form
             @submit.prevent="append"
@@ -97,23 +83,11 @@ import { defineComponent, ref, watch, onBeforeUnmount, computed, Ref, nextTick }
 import Database, { Collection } from "../Database";
 import { Pair } from "../schema";
 import Item from "./Item.vue";
+import Username from "./Username.vue";
 
 let db: Collection;
 
-function useUsername(isUsernameSet: Ref<boolean>) {
-  const username = ref('');
-
-  function setUsername() {
-    isUsernameSet.value = true;
-  }
-
-  return {
-    username,
-    setUsername,
-  };
-}
-
-function useSynonym(isUsernameSet: Ref<boolean>, username: Ref<string>) {
+function useSynonym(username: Ref<string>) {
   const a = ref('');
   const b = ref('');
   const errorA = ref(false);
@@ -122,7 +96,7 @@ function useSynonym(isUsernameSet: Ref<boolean>, username: Ref<string>) {
   const list = ref<Pair[]>([]);
   const editPair = ref<Pair>(null);
 
-  watch(isUsernameSet, async () => {
+  watch(username, async () => {
     await nextTick();
     inputA.value.focus();
     db = await Database.get();
@@ -258,6 +232,7 @@ function useSynonym(isUsernameSet: Ref<boolean>, username: Ref<string>) {
 export default defineComponent({
   name: 'HelloWorld',
   components: {
+    Username,
     Item,
   },
   props: {
@@ -267,14 +242,16 @@ export default defineComponent({
     }
   },
   setup() {
-    const isUsernameSet = ref(false);
-    const { username, setUsername } = useUsername(isUsernameSet);
+    const username = ref('');
+
+    function setUsername(value: string) {
+      username.value = value;
+    }
 
     return {
-      isUsernameSet,
       username,
       setUsername,
-      ...useSynonym(isUsernameSet, username),
+      ...useSynonym(username),
     }
   },
 });
