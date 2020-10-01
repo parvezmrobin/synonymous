@@ -42,23 +42,11 @@
             </div>
           </form>
           <div style="display: flex; justify-content: center;">
-            <table
+            <WordList
               v-if="groups.length"
-              class="table"
-            >
-              <tbody>
-                <tr v-for="group in groups">
-                  <th>{{ group[0] }}</th>
-                  <td>
-                    <Item
-                      v-for="item in group.slice(1)"
-                      :name="item"
-                      @edit="setEditPair(item)"
-                    />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+              :groups="groups"
+              @edit="setEditPair"
+            />
             <div
               v-else
               class="alert alert-primary text-center w-100"
@@ -84,6 +72,7 @@ import Database, { Collection } from "../Database";
 import { Pair } from "../schema";
 import Item from "./Item.vue";
 import Username from "./Username.vue";
+import WordList from "./WordList.vue";
 
 let db: Collection;
 
@@ -232,6 +221,7 @@ function useSynonym(username: Ref<string>) {
 export default defineComponent({
   name: 'HelloWorld',
   components: {
+    WordList,
     Username,
     Item,
   },

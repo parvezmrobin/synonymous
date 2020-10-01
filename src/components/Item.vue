@@ -19,6 +19,7 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "Item",
+  emits: ['edit'],
   props: {
     name: {
       type: String,
