@@ -52,20 +52,20 @@
                 v-else
                 class="alert alert-success text-center w-100"
               >
-                <strong>Loading your synonyms...</strong> <br>
+                <strong>Welcome to Synonymous!</strong> <br>
+                <span class="d-inline-block">
+                  Keep adding synonym pairs.
+                </span>
+                    <span class="d-inline-block">
+                  &nbsp;Words of similar meaning will be grouped automatically.
+                </span>
               </div>
             </template>
             <div
               v-else
               class="alert alert-primary text-center w-100"
             >
-              <strong>Welcome to Synonymous!</strong> <br>
-              <span class="d-inline-block">
-              Keep adding synonym pairs.
-            </span>
-              <span class="d-inline-block">
-              &nbsp;Words of similar meaning will be grouped automatically.
-            </span>
+              <strong>Loading your synonyms...</strong> <br>
             </div>
           </div>
         </template>
@@ -133,6 +133,9 @@ function useSynonym(username: Ref<string>) {
   }
 
   const groups = computed(() => {
+    if (!list.value) {
+      return undefined;
+    }
     const groups = [] as Map<string, number>[];
 
     function merge(i, j, pair: Pair) {
