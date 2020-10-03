@@ -56,8 +56,14 @@
                 <span class="d-inline-block">
                   Keep adding synonym pairs.
                 </span>
-                    <span class="d-inline-block">
+                <span class="d-inline-block">
                   &nbsp;Words of similar meaning will be grouped automatically.
+                </span>
+                <span class="d-inline-block mt-2">
+                  &nbsp;For example, add <code>increase</code> and <code>grow</code> and then <code>grow</code> and <code>expand</code>.
+                </span>
+                <span class="d-inline-block">
+                  Eventually, <code>increase</code>, <code>grow</code> and <code>expand</code> will make a group.
                 </span>
               </div>
             </template>
