@@ -42,11 +42,19 @@
             </div>
           </form>
           <div style="display: flex; justify-content: center;">
-            <WordList
-              v-if="groups.length"
-              :groups="groups"
-              @edit="setEditPair"
-            />
+            <template v-if="groups">
+              <WordList
+                v-if="groups.length"
+                :groups="groups"
+                @edit="setEditPair"
+              />
+              <div
+                v-else
+                class="alert alert-success text-center w-100"
+              >
+                <strong>Loading your synonyms...</strong> <br>
+              </div>
+            </template>
             <div
               v-else
               class="alert alert-primary text-center w-100"
@@ -82,7 +90,7 @@ function useSynonym(username: Ref<string>) {
   const errorA = ref(false);
   const errorB = ref(false);
   const inputA = ref<HTMLInputElement>(null);
-  const list = ref<Pair[]>([]);
+  const list = ref<Pair[]>();
   const editPair = ref<Pair>(null);
 
   watch(username, async () => {
@@ -201,7 +209,7 @@ function useSynonym(username: Ref<string>) {
 
   const btnText = computed(() => {
     return editPair.value ? 'Edit Pair' : 'Add Pair';
-  })
+  });
 
   return {
     a,
