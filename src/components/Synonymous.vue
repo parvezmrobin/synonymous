@@ -136,6 +136,8 @@ function useSynonym(username: Ref<string>) {
     editPair.value = pair;
     a.value = pair.a;
     b.value = pair.b;
+    inputA.value.scroll(0, 0);
+    inputA.value.focus();
   }
 
   const groups = computed(() => {
