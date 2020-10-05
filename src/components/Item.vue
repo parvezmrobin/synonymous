@@ -1,6 +1,6 @@
 <template>
   <div class="item d-inline-block">
-    <div class="badge badge-light mr-2">
+    <div class="badge badge-light">
       {{ name }}
     </div>
     <span
@@ -10,7 +10,8 @@
       @click="$emit('edit')"
     >
     🖉
-  </span>
+    </span>
+    &nbsp;
   </div>
 </template>
 
@@ -43,7 +44,8 @@ export default defineComponent({
   z-index: 1;
 }
 
-.item:hover .edit {
+.item:hover .edit,
+.item:focus .edit {
   display: inline !important;
 }
 </style>
