@@ -1,6 +1,6 @@
 <template>
   <div class="item d-inline-block">
-    <div class="badge badge-light">
+    <div class="badge badge-secondary">
       {{ name }}
     </div>
     <span
@@ -9,7 +9,7 @@
       aria-hidden="true"
       @click="$emit('edit')"
     >
-    🖉
+    <span class="text-info">🖉</span>
     </span>
     &nbsp;
   </div>

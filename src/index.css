@@ -7,3 +7,16 @@
 html {
     scroll-behavior: smooth;
 }
+
+body, .form-control, .form-control:focus {
+    background-color: var(--dark);
+    color: var(--info);
+}
+
+.table-dark {
+    color: var(--info);
+}
+
+.badge-secondary {
+    color: var(--gray-dark);
+}
