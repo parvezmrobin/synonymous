@@ -116,8 +116,8 @@ function useSynonym(username: Ref<string>) {
   });
   onBeforeUnmount(Database.clear);
 
-  function findPair(a, b) {
-    return list.value.find((pair) => (a === pair.a && b === pair.b) || (a === pair.b && b === pair.a));
+  function alreadyGrouped(a, b) {
+    return groups.value.find((group) => group.includes(a) && group.includes(b));
   }
 
   async function append() {
@@ -127,15 +127,15 @@ function useSynonym(username: Ref<string>) {
       return;
     }
 
-    const existingPair = findPair(a.value, b.value);
+    const exists = alreadyGrouped(a.value, b.value);
     if (editPair.value) {
       // if it's in edit mode but the words are same as another pair
-      if (editPair.value !== existingPair) {
+      if (exists &&  (editPair.value.a !== a.value || editPair.value.b !== b.value)) {
         errorA.value = 'Word pair already exists';
         errorB.value = ' ';
         return;
       }
-    } else if (existingPair) {
+    } else if (exists) {
       // if it's in add mode but there is already a pair like this
       errorA.value = 'Word pair already exists';
       errorB.value = ' ';
