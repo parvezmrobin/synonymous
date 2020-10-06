@@ -9,31 +9,39 @@
           @input="setUsername"
         />
         <template v-else>
-          <form
-            @submit.prevent="append"
-          >
-            <div class="input-group mb-3">
-              <input
-                type="text"
-                v-model="a"
-                class="form-control"
-                :class="{'is-invalid': errorA}"
-                ref="inputA"
-                placeholder="First Word"
-                title="First Word"
-              >
-              <input
-                type="text"
-                v-model="b"
-                class="form-control"
-                :class="{'is-invalid': errorB}"
-                placeholder="Second Word"
-                title="First Word"
-              >
-              <div class="input-group-append">
+          <form @submit.prevent="append">
+            <div class="mb-3 form-row">
+              <div class="col">
+                <input
+                  type="text"
+                  v-model="a"
+                  class="form-control"
+                  :class="{'is-invalid': errorA}"
+                  ref="inputA"
+                  placeholder="First Word"
+                  title="First Word"
+                >
+                <div class="invalid-feedback">
+                  {{ errorA }}
+                </div>
+              </div>
+              <div class="col">
+                <input
+                  type="text"
+                  v-model="b"
+                  class="form-control"
+                  :class="{'is-invalid': errorB}"
+                  placeholder="Second Word"
+                  title="First Word"
+                >
+                <div class="invalid-feedback">
+                  {{ errorB }}
+                </div>
+              </div>
+              <div class="col" style="flex: 0 0 160px">
                 <button
                   type="submit"
-                  class="btn"
+                  class="btn btn-block"
                   :class="btnClass"
                 >
                   {{ btnText }}
@@ -93,8 +101,8 @@ let db: Collection;
 function useSynonym(username: Ref<string>) {
   const a = ref('');
   const b = ref('');
-  const errorA = ref(false);
-  const errorB = ref(false);
+  const errorA = ref('');
+  const errorB = ref('');
   const inputA = ref<HTMLInputElement>(null);
   const list = ref<Pair[]>();
   const editPair = ref<Pair>(null);
@@ -108,10 +116,29 @@ function useSynonym(username: Ref<string>) {
   });
   onBeforeUnmount(Database.clear);
 
+  function findPair(a, b) {
+    return list.value.find((pair) => (a === pair.a && b === pair.b) || (a === pair.b && b === pair.a));
+  }
+
   async function append() {
-    errorA.value = !a.value.trim();
-    errorB.value = !b.value.trim();
+    errorA.value = a.value.trim() ? '' : 'First word is required';
+    errorB.value = b.value.trim() ? '' : 'Second word is required';
     if (errorA.value || errorB.value) {
+      return;
+    }
+
+    const existingPair = findPair(a.value, b.value);
+    if (editPair.value) {
+      // if it's in edit mode but the words are same as another pair
+      if (editPair.value !== existingPair) {
+        errorA.value = 'Word pair already exists';
+        errorB.value = ' ';
+        return;
+      }
+    } else if (existingPair) {
+      // if it's in add mode but there is already a pair like this
+      errorA.value = 'Word pair already exists';
+      errorB.value = ' ';
       return;
     }
 
@@ -139,6 +166,16 @@ function useSynonym(username: Ref<string>) {
     inputA.value.scroll(0, 0);
     inputA.value.focus();
   }
+
+  const btnClass = computed(() => {
+    if (errorA.value || errorB.value) {
+      return 'btn-outline-danger';
+    }
+    if (editPair.value) {
+      return 'btn-outline-primary';
+    }
+    return 'btn-outline-success';
+  });
 
   const groups = computed(() => {
     if (!list.value) {
@@ -206,16 +243,6 @@ function useSynonym(username: Ref<string>) {
     ).sort(([w1], [w2]) => w1 > w2 ? 1 : -1);
 
     return sortedGroups;
-  });
-
-  const btnClass = computed(() => {
-    if (errorA.value || errorB.value) {
-      return 'btn-outline-danger';
-    }
-    if (editPair.value) {
-      return 'btn-outline-primary';
-    }
-    return 'btn-outline-success';
   });
 
   const btnText = computed(() => {
