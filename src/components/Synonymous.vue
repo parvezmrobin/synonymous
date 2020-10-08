@@ -89,7 +89,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, onBeforeUnmount, computed, Ref, nextTick } from "vue";
+import {
+  defineComponent,
+  ref,
+  watch,
+  computed,
+  nextTick,
+  Ref,
+  onBeforeMount,
+  onBeforeUnmount,
+} from "vue";
 import Database, { Collection } from "../Database";
 import { Pair } from "../schema";
 import Item from "./Item.vue";
@@ -107,14 +116,19 @@ function useSynonym(username: Ref<string>) {
   const list = ref<Pair[]>();
   const editPair = ref<Pair>(null);
 
+  onBeforeMount(async () => {
+    db = await Database.get();
+    // just to establish connection beforehand
+    await db.findOne({}, { projection: { _id: 1 } });
+  });
+  onBeforeUnmount(Database.clear);
+
   watch(username, async () => {
     await nextTick();
     inputA.value.focus();
-    db = await Database.get();
     const pairs = await db.find({ username: username.value }).asArray();
     list.value = pairs;
   });
-  onBeforeUnmount(Database.clear);
 
   function alreadyGrouped(a, b) {
     return groups.value.find((group) => group.includes(a) && group.includes(b));
