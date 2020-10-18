@@ -4,10 +4,12 @@
       <div class="col-md-8 offset-md-2">
         <h1 class="text-center">{{ header }}</h1>
         <hr>
+
         <Username
           v-if="!username"
           @input="setUsername"
         />
+
         <template v-else>
           <form @submit.prevent="append">
             <div class="mb-3 form-row">
@@ -83,6 +85,12 @@
             </div>
           </div>
         </template>
+
+        <button
+          class="btn btn-danger position-fixed"
+          style="bottom: 10px; right: 10px;"
+          @click="logout"
+        >Logout</button>
       </div>
     </div>
   </div>
@@ -124,6 +132,9 @@ function useSynonym(username: Ref<string>) {
   onBeforeUnmount(Database.clear);
 
   watch(username, async () => {
+    if (!username.value) {
+      return;
+    }
     await nextTick();
     inputA.value.focus();
     const pairs = await db.find({ username: username.value }).asArray();
@@ -298,9 +309,15 @@ export default defineComponent({
       username.value = value;
     }
 
+    function logout() {
+      username.value = '';
+      window.history.pushState({}, '', window.location.origin);
+    }
+
     return {
       username,
       setUsername,
+      logout,
       ...useSynonym(username),
     }
   },

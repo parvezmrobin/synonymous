@@ -10,9 +10,9 @@
   >
     <div class="input-group mb-3">
       <input
-        autofocus
         type="text"
         v-model="username"
+        ref="usernameInput"
         class="form-control"
         placeholder="Username"
         title="Username"
@@ -24,20 +24,31 @@
   </form>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 
 export default defineComponent({
   name: 'Username',
   emits: ['input'],
   setup(props, { emit }) {
     const username = ref('');
+    const usernameInput = ref<HTMLInputElement>(null);
+
+    onMounted(() => {
+      usernameInput.value.focus();
+      const usernameFromUrl = new URLSearchParams(window.location.search).get('username');
+      if (usernameFromUrl) {
+        emit('input', usernameFromUrl);
+      }
+    });
 
     function setUsername() {
+      window.history.pushState({}, '', `${window.location.href}?username=${username.value}`);
       emit('input', username.value);
     }
 
     return {
       username,
+      usernameInput,
       setUsername,
     };
   }
