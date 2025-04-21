@@ -11,8 +11,8 @@
 
         <template v-else>
           <form @submit.prevent="append">
-            <div class="mb-3 row">
-              <div class="col">
+            <div class=" row">
+              <div class="col-12 col-md mb-3">
                 <input
                   type="text"
                   v-model="a"
@@ -26,7 +26,7 @@
                   {{ errorA }}
                 </div>
               </div>
-              <div class="col">
+              <div class="col-12 col-md mb-3">
                 <input
                   type="text"
                   v-model="b"
@@ -39,7 +39,7 @@
                   {{ errorB }}
                 </div>
               </div>
-              <div class="col" style="flex: 0 0 160px">
+              <div class="col-12 col-md mb-3" style="flex: 0 0 160px">
                 <div class="d-grid gap-2">
                 <button
                   type="submit"

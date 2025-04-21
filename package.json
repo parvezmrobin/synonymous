@@ -1,9 +1,12 @@
 {
   "name": "synonymous",
   "version": "0.0.0",
+  "license": "UNLICENSED",
+  "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "mongodb-stitch-browser-sdk": "^4.8.0",
