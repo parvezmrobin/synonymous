@@ -8,15 +8,25 @@ html {
     scroll-behavior: smooth;
 }
 
-body, .form-control, .form-control:focus {
-    background-color: var(--dark);
-    color: var(--info);
-}
+body {
+    --light-sl: 78%, 15%;
+    --default-sl: 91%, 12%;
+    --dark-sl: 100%, 5%;
 
-.table-dark {
-    color: var(--info);
-}
+    --bg-blue-light: hsl(210, var(--light-sl));
+    --bg-blue-default: hsl(240, var(--default-sl));
+    --bg-blue-dark: hsl(230, var(--dark-sl));
 
-.badge-secondary {
-    color: var(--gray-dark);
+    --bg-indigo-light: hsl(250, var(--light-sl));
+    --bg-indigo-default: hsl(270, var(--default-sl));
+    --bg-indigo-dark: hsl(260, var(--dark-sl));
+
+    --bg-light: var(--bg-blue-light);
+    --bg-default: var(--bg-blue-default);
+    --bg-dark: var(--bg-blue-dark);
+
+    /*--bg-light: var(--bg-indigo-light);*/
+    /*--bg-default: var(--bg-indigo-default);*/
+    /*--bg-dark: var(--bg-indigo-dark);*/
+    background: radial-gradient(ellipse at top,var(--bg-default),var(--bg-light), var(--bg-dark)) fixed;
 }

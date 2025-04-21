@@ -1,5 +1,10 @@
+import vuePlugin from "@vitejs/plugin-vue";
+
 export default {
-  rollupOutputOptions: {
-    intro: 'const global = window;'
-  }
+    define: {
+        global: {}
+    },
+    plugins: [
+        vuePlugin()
+    ]
 }

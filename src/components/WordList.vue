@@ -5,7 +5,7 @@
  -->
 
 <template>
-  <table class="table table-dark">
+  <table class="table" style="--bs-table-bg: transparent">
     <tbody>
       <tr v-for="group in groups">
         <th>{{ group[0] }}</th>

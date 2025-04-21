@@ -2,8 +2,7 @@
   <div class="container">
     <div class="row">
       <div class="col-md-8 offset-md-2">
-        <h1 class="text-center">{{ header }}</h1>
-        <hr>
+        <h1 class="text-center text-info fw-light mt-3 mb-5">{{ header }}</h1>
 
         <Username
           v-if="!username"
@@ -12,7 +11,7 @@
 
         <template v-else>
           <form @submit.prevent="append">
-            <div class="mb-3 form-row">
+            <div class="mb-3 row">
               <div class="col">
                 <input
                   type="text"
@@ -41,13 +40,15 @@
                 </div>
               </div>
               <div class="col" style="flex: 0 0 160px">
+                <div class="d-grid gap-2">
                 <button
                   type="submit"
-                  class="btn btn-block"
+                  class="btn"
                   :class="btnClass"
                 >
                   {{ btnText }}
                 </button>
+                </div>
               </div>
             </div>
           </form>
@@ -141,7 +142,7 @@ function useSynonym(username: Ref<string>) {
     list.value = pairs;
   });
 
-  function alreadyGrouped(a, b) {
+  function alreadyGrouped(a: string, b: string) {
     return groups.value.find((group) => group.includes(a) && group.includes(b));
   }
 
@@ -154,14 +155,14 @@ function useSynonym(username: Ref<string>) {
 
     const exists = alreadyGrouped(a.value, b.value);
     if (editPair.value) {
-      // if it's in edit mode but the words are same as another pair
+      // if it's in edit mode, but the words are the same as another pair
       if (exists &&  (editPair.value.a !== a.value || editPair.value.b !== b.value)) {
         errorA.value = 'Word pair already exists';
         errorB.value = ' ';
         return;
       }
     } else if (exists) {
-      // if it's in add mode but there is already a pair like this
+      // if it's in add mode, but there is already a pair like this
       errorA.value = 'Word pair already exists';
       errorB.value = ' ';
       return;
@@ -208,7 +209,7 @@ function useSynonym(username: Ref<string>) {
     }
     const groups = [] as Map<string, number>[];
 
-    function merge(i, j, pair: Pair) {
+    function merge(i: number, j: number, pair: Pair) {
       const groupJ = groups[j];
       groups.splice(j, 1);
 
